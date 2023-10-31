@@ -10,10 +10,16 @@ const router = createRouter({
       component: () => import("../views/Entrar.vue"),
     },
     {
-      path: "/menu",
+      path: "/menu/",
       name: "menu",
       component: () => import("../views/Menu.vue"),
       children: [
+        {
+          path: "",
+          name: "menu",
+          props: true,
+          component: () => import("../views/menu/OpcoesMenu.vue"),
+        },
         {
           path: "cadastrar-usuario",
           component: () => import("../views/cadastro/CadastroUsuario.vue"),

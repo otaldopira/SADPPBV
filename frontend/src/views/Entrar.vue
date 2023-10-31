@@ -1,5 +1,7 @@
 <script>
 import { loading, modalAlert } from "../assets/js/global";
+import { MD5 } from "crypto-js";
+
 export default {
   data() {
     return {
@@ -8,6 +10,9 @@ export default {
         senha: "",
       },
     };
+  },
+  mounted() {
+    this.$router.push({ name: 'menu', params: {message: 'ola'} });
   },
   methods: {
     abrirModal() {
@@ -39,14 +44,17 @@ export default {
     },
     async tentativaLogin() {
       loading();
+      const data = {
+        registro: this.form.registro,
+        senha: MD5(this.form.senha).toString(),
+      };
+      console.log("Enviado:");
+      console.log(data);
       try {
         const response = await axios({
           method: "post",
           url: "/login",
-          data: {
-            registro: this.form.registro,
-            senha: this.form.senha,
-          },
+          data: data,
         });
         Swal.close();
         console.log(response);
@@ -67,8 +75,15 @@ export default {
 <template>
   <div class="m-auto h-full flex justify-center items-center mt-auto">
     <div
-      class="w-2/5 h-3/5 p-6 flex flex-col gap-3 bg-white justify-center items-center rounded-md shadow-md"
+      class="overflow-y-hidden w-2/5 h-4/5 p-6 flex flex-col gap-3 bg-white justify-center items-center rounded-md shadow-md"
     >
+      <div class="mb-8">
+        <img
+          src="src\assets\imagens\logo-utf-mais-prod.svg"
+          width="250"
+          alt="logo UTFPR"
+        />
+      </div>
       <input
         v-model="form.registro"
         class="input-container"
@@ -85,13 +100,13 @@ export default {
       <button
         @click="tentativaLogin"
         :disabled="form.registro == '' || form.senha == ''"
-        class="disabled:cursor-not-allowed disabled:opacity-50 mt-5 tracking-wide font-semibold bg-teal-500 text-gray-100 w-full py-4 rounded-lg enabled:hover:bg-teal-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+        class="disabled:cursor-not-allowed disabled:opacity-50 mt-5 tracking-wide font-semibold bg-yellow-400 text-gray-100 w-full py-4 rounded-lg enabled:hover:bg-yellow-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
       >
         <span>Entrar</span>
       </button>
       <button
         @click="abrirModal"
-        class="mt-5 tracking-wide font-semibold bg-teal-500 text-gray-100 w-full py-4 rounded-lg enabled:hover:bg-teal-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+        class="mt-5 tracking-wide font-semibold bg-yellow-400 text-gray-100 w-full py-4 rounded-lg enabled:hover:bg-yellow-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
       >
         <div class="inline-flex gap-2">
           <span class="material-symbols-rounded"> smb_share </span>

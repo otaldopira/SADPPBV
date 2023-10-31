@@ -9,20 +9,56 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json([
-            "usuarios" => User::all(),
-            "message" => "Usuário criado com sucesso.",
-            "success" => true
-        ], 200);
+        try {
+            $usuarios = User::all();
+
+            if ($usuarios == null) {
+                return response()->json([
+                    "message" => "Usuários não encontrados.",
+                    "success" => true
+                ], 400);
+            }
+
+            return response()->json([
+                "usuarios" => $usuarios,
+                "message" => "Usuários encontrados.",
+                "success" => true
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Usuários não encontrados.",
+                "success" => true
+            ], 400);
+        }
+
     }
 
     public function show($registro)
     {
-        return response()->json([
-            "usuarios" => User::findOrFail($registro),
-            "message" => "Usuário criado com sucesso.",
-            "success" => true
-        ], 200);
+        try {
+            $usuario = User::find($registro);
+
+            if ($usuario == null) {
+                return response()->json([
+                    "message" => "Usuário não encontrado.",
+                    "success" => true
+                ], 400);
+            }
+
+            return response()->json([
+                "usuario" => $usuario,
+                "message" => "Usuário encontrado.",
+                "success" => true
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Usuário não encontrado.",
+                "success" => true
+            ], 400);
+        }
+
     }
 
 
@@ -52,6 +88,7 @@ class UserController extends Controller
                 "message" => "Usuário criado com sucesso.",
                 "success" => true
             ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 "message" => $e->getMessage(),
@@ -63,7 +100,7 @@ class UserController extends Controller
     public function update(Request $request, $registro)
     {
         try {
-            
+
             $user = User::findOrFail($registro);
 
 

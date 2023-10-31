@@ -47,6 +47,8 @@
 <script>
 import InputUniversal from "../../../src/components/Input.vue";
 import { loading, modalAlert } from "../../assets/js/global";
+import { MD5 } from "crypto-js";
+
 export default {
   data() {
     return {
@@ -60,32 +62,28 @@ export default {
   components: {
     "input-universal": InputUniversal,
   },
-  watch: {
-    registro(registro) {
-      console.log(registro);
-    },
+  mounted() {
   },
   methods: {
     async cadastroUsuario() {
       loading();
-
+      const data = {
+        registro: this.registro,
+        nome: this.nome,
+        email: this.email,
+        senha: MD5(this.senha).toString(),
+        tipo_usuario: this.tipo_usuario,
+      };
+      console.log('Enviado:');
+      console.log(data);
       try {
-        const response = await axios.post(
-          "/usuarios",
-          {
-            registro: this.registro,
-            nome: this.nome,
-            email: this.email,
-            senha: this.senha,
-            tipo_usuario: this.tipo_usuario,
+        const response = await axios.post("/usuarios", data, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        );
+        });
         Swal.close();
+        console.log('Recebido:');
         console.log(response);
         if (response.data.success == false) {
           return modalAlert("error", response.data.message);
