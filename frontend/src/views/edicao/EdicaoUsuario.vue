@@ -1,9 +1,10 @@
 <template>
   <div class="flex justify-center pt-5">
     <div class="bg-white p-8 rounded-lg shadow-lg w-2/5 flex flex-col gap-3">
-      <h2 class="text-2xl mb-4 text-center font-bold">Cadastro de Usuário</h2>
       <!-- Formulário de cadastro -->
       <input-universal
+        class="cursor-not-allowed"
+        disabled
         v-model:valor="registro"
         tipo="number"
         placeholder="Registro"
@@ -34,10 +35,10 @@
       </select>
       <div class="text-center">
         <button
-          @click="cadastroUsuario"
+          @click="atualizarUsuario"
           class="mt-5 tracking-wide font-semibold text-gray-800 w-full py-4 rounded-lg bg-yellow-300 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
         >
-          Cadastrar
+          Atualizar
         </button>
       </div>
     </div>
@@ -61,29 +62,56 @@ export default {
   components: {
     "input-universal": InputUniversal,
   },
+  created() {
+    this.registro = this.$route.params.id;
+    if (this.registro) {
+      this.buscarUsuario();
+    }
+  },
+  mounted() {},
   methods: {
-    async cadastroUsuario() {
+    async buscarUsuario() {
+      this.$global.loading();
+      var webApiUrl = `/usuarios/${this.registro}`;
+      try {
+        const response = await axios.get(webApiUrl);
+        console.log(response);
+        Swal.close();
+        if (response.data.success == true) {
+          const user = response.data.usuario;
+          this.nome = user.nome;
+          this.email = user.email;
+          this.tipo_usuario = user.tipo_usuario;
+        } else {
+          this.$global.modalAlert(
+            "error",
+            "Não foi possível recuperar os usuários."
+          );
+        }
+      } catch (error) {
+        this.$global.modalAlert(
+          "error",
+          "Ocorreu um erro ao buscar os usuários."
+        );
+      }
+    },
+    async atualizarUsuario() {
       this.$global.loading();
       const data = {
-        registro: this.registro,
         nome: this.nome,
         email: this.email,
         senha: MD5(this.senha).toString(),
         tipo_usuario: this.tipo_usuario,
       };
-      console.log('Enviado:');
+      console.log("Enviado:");
       console.log(data);
       try {
-        const response = await axios.post("/usuarios", data, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        });
+        const response = await axios.put(`/usuarios/${this.registro}`, data);
         Swal.close();
-        console.log('Recebido:');
+        console.log("Recebido:");
         console.log(response);
         if (response.data.success == false) {
-          return this.$global.modalAlert("error", response.data.message);
+          return this.$global.modalAlert("error", response.data.message ?? "Não foi possível complementar a operação...");
         }
         return this.$global.modalAlert("success", response.data.message);
       } catch (error) {

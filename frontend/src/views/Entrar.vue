@@ -1,5 +1,4 @@
 <script>
-import { loading, modalAlert } from "../assets/js/global";
 import { MD5 } from "crypto-js";
 
 export default {
@@ -11,9 +10,7 @@ export default {
       },
     };
   },
-  mounted() {
-    this.$router.push({ name: 'menu', params: {message: 'ola'} });
-  },
+  mounted() {},
   methods: {
     abrirModal() {
       Swal.fire({
@@ -36,14 +33,10 @@ export default {
           axios.defaults.baseURL = `http://${login}`;
         },
         allowOutsideClick: () => !Swal.isLoading(),
-      }).then((result) => {
-        if (result.isConfirmed) {
-          modalAlert("success", "URL setada com sucesso.");
-        }
       });
     },
     async tentativaLogin() {
-      loading();
+      this.$global.loading();
       const data = {
         registro: this.form.registro,
         senha: MD5(this.form.senha).toString(),
@@ -59,14 +52,17 @@ export default {
         Swal.close();
         console.log(response);
         if (response.data.success == false) {
-          return modalAlert("error", response.data.message);
+          return this.$global.modalAlert("error", response.data.message);
         }
 
         localStorage.setItem("token", response.data.token);
         this.$router.push("/menu");
       } catch (error) {
         console.log(error);
-        modalAlert("error", "Não foi possível complementar a operação...");
+        this.$global.modalAlert(
+          "error",
+          "Não foi possível complementar a operação..."
+        );
       }
     },
   },

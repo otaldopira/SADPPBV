@@ -10,8 +10,7 @@ const router = createRouter({
       component: () => import("../views/Entrar.vue"),
     },
     {
-      path: "/menu/",
-      name: "menu",
+      path: "/menu",
       component: () => import("../views/Menu.vue"),
       children: [
         {
@@ -23,6 +22,15 @@ const router = createRouter({
         {
           path: "cadastrar-usuario",
           component: () => import("../views/cadastro/CadastroUsuario.vue"),
+        },
+        {
+          path: "edicao-usuario/:id",
+          name: "editar-usuario",
+          component: () => import("../views/edicao/EdicaoUsuario.vue"),
+        },
+        {
+          path: "listar-usuarios",
+          component: () => import("../views/listagem/ListagemUsuario.vue"),
         },
       ],
     },

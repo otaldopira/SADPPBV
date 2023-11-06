@@ -21,10 +21,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::put('/usuarios/{registro}', [UserController::class, 'update']);
+    Route::delete('/usuarios/{registro}', [UserController::class, 'destroy']);
+
     Route::middleware(['VerificarNivelUsuario'])->group(function () {
-        // Depois de cadastrar o ADMINISTRATOR
+        // USUÁRIOS
         Route::post('/usuarios', [UserController::class, 'store']);
+        Route::get('/usuarios', [UserController::class, 'index']);
+        Route::get('/usuarios/{registro}', [UserController::class, 'show']);
     });
 
 });
@@ -33,10 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::post('/usuarios', [UserController::class, 'store']);
 
 
-Route::get('/usuarios', [UserController::class, 'index']);
-Route::get('/usuarios/{registro}', [UserController::class, 'show']);
-Route::put('/usuarios/{registro}', [UserController::class, 'update']);
-Route::delete('/usuarios/{registro}', [UserController::class, 'destroy']);
+
 
 Route::get('/pontos', [PointController::class, 'index']);
 Route::get('/pontos/{id}', [PointController::class, 'show']);

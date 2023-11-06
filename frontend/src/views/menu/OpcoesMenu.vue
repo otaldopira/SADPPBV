@@ -7,6 +7,11 @@
       title="Cadastro de Usuários"
       route="menu/cadastrar-usuario"
     ></Card>
+    <Card
+      icon="list-user"
+      title="Listagem de Usuários"
+      route="menu/listar-usuarios"
+    ></Card>
   </div>
 </template>
 <script>

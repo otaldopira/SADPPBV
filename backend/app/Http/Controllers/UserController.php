@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -65,12 +66,20 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
-            $this->validate($request, [
+
+            $validator = Validator::make($request->all(), [
                 'registro' => 'required|numeric|unique:users',
                 'email' => 'required|unique:users|email',
                 'nome' => 'required',
                 'senha' => 'required',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    "message" => $validator->errors()->first(),
+                    "success" => false
+                ], 400);
+            }
 
             $user = new User;
             $user->registro = $request->registro;
@@ -101,28 +110,46 @@ class UserController extends Controller
     {
         try {
 
-            $user = User::findOrFail($registro);
+            $user = User::find($registro);
 
 
-            $this->validate($request, [
-                "email" => "unique:users,email,{$user->registro},registro",
-            ]);
+            if ($user == null) {
+                return response()->json([
+                    "message" => "Usuário não encontrado.",
+                    "success" => true
+                ], 400);
+            }
 
+            if ($user->email != $request->email) {
+                $validator = Validator::make($request->all(), [
+                    'email' => 'unique:users'
+                ]);
 
+                if ($validator->fails()) {
+                    return response()->json([
+                        "message" => $validator->errors()->first(),
+                        "success" => false
+                    ], 400);
+                }
+            }
+
+            $user->registro = $registro;
             $user->email = $request->email;
             $user->nome = $request->nome;
             $user->senha = $request->senha;
 
             if (isset($request->tipo_usuario)) {
-                $user->type_user = $request->tipo_usuario;
+                $user->tipo_usuario = $request->tipo_usuario;
             }
 
-            $user->save();
+            if ($user->save()) {
+                return response()->json([
+                    "message" => "Usuário atualizado com sucesso.",
+                    "success" => true
+                ], 200);
+            }
 
-            return response()->json([
-                "message" => "Usuário atualizado com sucesso.",
-                "success" => true
-            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 "message" => $e->getMessage(),

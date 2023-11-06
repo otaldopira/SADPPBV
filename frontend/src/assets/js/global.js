@@ -1,7 +1,7 @@
 export function loading() {
   Swal.fire({
     title: "Verificando",
-    imageUrl: "../src/assets/imagens/wait-route.gif",
+    imageUrl: '/public/wait-route.gif',
     imageHeight: 250,
     background: "#FFFFFF",
     showConfirmButton: false,

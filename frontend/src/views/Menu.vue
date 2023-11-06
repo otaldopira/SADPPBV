@@ -1,12 +1,10 @@
 <script>
 import AppBar from "/src/components/AppBar.vue";
-import { loading, modalAlert } from "../assets/js/global";
 export default {
   data() {
     return {};
   },
   mounted() {
-    console.log(this.$router.params);
   },
   components:{
     "app-bar": AppBar
