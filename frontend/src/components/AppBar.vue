@@ -1,29 +1,20 @@
 <template>
-  <nav
-    class="relative flex flex-wrap items-center justify-between px-2 py-3 bg-yellow-400 mb-3"
-  >
-    <div
-      class="container px-4 mx-auto flex flex-wrap items-center justify-between"
-    >
-      <div
-        class="w-full relative flex justify-between lg:w-auto px-4 lg:static lg:block lg:justify-start"
-      >
-        <div>
-          <router-link
-            class="text-md font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-gray-800"
-            to="/menu"
-          >
-            SADPPBV
-          </router-link>
-        </div>
+  <nav class="relative py-3 bg-yellow-500 mb-3 text-white rounded-b-xl ">
+    <div class="w-full flex justify-between items-center px-8">
+      <!-- LOGO -->
+      <div>
+        <router-link
+          class="text-md font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase"
+          to="/menu"
+        >
+          <img width="80" src="../assets/imagens/UTFPR.png" alt="UTFPR LOGO">
+        </router-link>
       </div>
-      <div
-        v-bind:class="{ hidden: !showMenu, flex: showMenu }"
-        class="lg:flex lg:flex-grow items-center"
-      >
-        <ul class="flex flex-col lg:flex-row list-none ml-auto cursor-pointer">
+      <!-- Logout -->
+      <div>
+        <ul class="cursor-pointer">
           <li class="nav-item" @click="logout">
-            <span class="material-symbols-rounded text-gray-800 font-bold"> logout </span>
+            <span class="material-symbols-rounded font-bold"> logout </span>
           </li>
         </ul>
       </div>

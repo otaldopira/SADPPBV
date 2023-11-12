@@ -15,6 +15,7 @@ class AuthController extends Controller
                 $token = $user->CreateToken('JWT')->plainTextToken;
                 $tokenParts = explode('|', $token);
                 return response()->json([
+                    "registro" => $user->registro,
                     "token" => $tokenParts[1],
                     "success" => true,
                     "message" =>"Usuário logado com sucesso."

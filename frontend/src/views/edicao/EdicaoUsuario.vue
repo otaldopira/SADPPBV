@@ -36,7 +36,7 @@
       <div class="text-center">
         <button
           @click="atualizarUsuario"
-          class="mt-5 tracking-wide font-semibold text-gray-800 w-full py-4 rounded-lg bg-yellow-300 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+          class="mt-5 tracking-wide text-white w-full py-4 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
         >
           Atualizar
         </button>
@@ -73,10 +73,14 @@ export default {
     async buscarUsuario() {
       this.$global.loading();
       var webApiUrl = `/usuarios/${this.registro}`;
+
       try {
-        const response = await axios.get(webApiUrl);
-        console.log(response);
-        Swal.close();
+        const response = await axios.get(webApiUrl).then(
+          setTimeout(() => {
+            Swal.close();
+          }, 1000)
+        );
+      
         if (response.data.success == true) {
           const user = response.data.usuario;
           this.nome = user.nome;
@@ -106,16 +110,32 @@ export default {
       console.log("Enviado:");
       console.log(data);
       try {
-        const response = await axios.put(`/usuarios/${this.registro}`, data);
-        Swal.close();
+        const response = await axios
+          .put(`/usuarios/${this.$route.params.id}`, data)
+          .then(
+            setTimeout(() => {
+              Swal.close();
+            }, 1000)
+          );
+
         console.log("Recebido:");
         console.log(response);
+
         if (response.data.success == false) {
-          return this.$global.modalAlert("error", response.data.message ?? "Não foi possível complementar a operação...");
+          return toastr.error(
+            response.data.message ?? "Não foi possível efetuar o login."
+          );
         }
-        return this.$global.modalAlert("success", response.data.message);
+
+        return toastr.success(
+          response.data.message ?? "Usuário editado com sucesso."
+        );
       } catch (error) {
-        this.$global.modalAlert("error", error.response.data.message ?? "Não foi possível complementar a operação...");
+        console.log("Recebido:" + error);
+        return toastr.error(
+          error.response.data.message ??
+            "Não foi possível complementar a operação..."
+        );
       }
     },
   },

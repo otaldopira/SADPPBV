@@ -108,6 +108,7 @@ class UserController extends Controller
 
     public function update(Request $request, $registro)
     {
+
         try {
 
             $user = User::find($registro);
@@ -133,7 +134,6 @@ class UserController extends Controller
                 }
             }
 
-            $user->registro = $registro;
             $user->email = $request->email;
             $user->nome = $request->nome;
             $user->senha = $request->senha;
@@ -162,7 +162,16 @@ class UserController extends Controller
     {
         try {
 
-            $user = User::findOrFail($registro);
+            $user = User::find($registro);
+
+            if ($user == null) {
+                return response()->json([
+                    "message" => "Não foi possível encontrar o usuário.",
+                    "success" => true
+                ], 400);
+            }
+
+            $user->tokens->each->delete();
 
             $user->delete();
 

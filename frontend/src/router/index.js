@@ -21,6 +21,7 @@ const router = createRouter({
         },
         {
           path: "cadastrar-usuario",
+          name: "cadastrar-usuario",
           component: () => import("../views/cadastro/CadastroUsuario.vue"),
         },
         {
@@ -30,7 +31,13 @@ const router = createRouter({
         },
         {
           path: "listar-usuarios",
+          name: "listar-usuarios",
           component: () => import("../views/listagem/ListagemUsuario.vue"),
+        },
+        {
+          path: "minha-conta",
+          name: "minha-conta",
+          component: () => import("../views/MinhaConta.vue"),
         },
       ],
     },

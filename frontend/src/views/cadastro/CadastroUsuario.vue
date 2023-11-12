@@ -35,7 +35,7 @@
       <div class="text-center">
         <button
           @click="cadastroUsuario"
-          class="mt-5 tracking-wide font-semibold text-gray-800 w-full py-4 rounded-lg bg-yellow-300 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+          class="mt-5 tracking-wide text-white w-full py-4 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
         >
           Cadastrar
         </button>

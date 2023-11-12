@@ -23,14 +23,20 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::put('/usuarios/{registro}', [UserController::class, 'update']);
-    Route::delete('/usuarios/{registro}', [UserController::class, 'destroy']);
 
+    // ADM ou o próprio usuário
     Route::middleware(['VerificarNivelUsuario'])->group(function () {
+        // USUÁRIOS
+        Route::get('/usuarios/{registro}', [UserController::class, 'show']);
+        Route::put('/usuarios/{registro}', [UserController::class, 'update']);
+        Route::delete('/usuarios/{registro}', [UserController::class, 'destroy']);
+    });
+
+    // Somente ADM
+    Route::middleware(['SomenteAdm'])->group(function () {
         // USUÁRIOS
         Route::post('/usuarios', [UserController::class, 'store']);
         Route::get('/usuarios', [UserController::class, 'index']);
-        Route::get('/usuarios/{registro}', [UserController::class, 'show']);
     });
 
 });

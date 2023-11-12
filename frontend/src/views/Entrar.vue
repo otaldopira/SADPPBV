@@ -37,31 +37,44 @@ export default {
     },
     async tentativaLogin() {
       this.$global.loading();
+
       const data = {
         registro: this.form.registro,
         senha: MD5(this.form.senha).toString(),
       };
-      console.log("Enviado:");
+
+      console.log("Enviado:(Login)");
       console.log(data);
+
       try {
         const response = await axios({
           method: "post",
           url: "/login",
           data: data,
-        });
-        Swal.close();
+        }).then(
+          setTimeout(() => {
+            Swal.close();
+          }, 1000)
+        );
+
+        console.log("Recebido:(Login)");
         console.log(response);
+
         if (response.data.success == false) {
-          return this.$global.modalAlert("error", response.data.message);
+          toastr.error(
+            response.data.message ?? "Não foi possível efetuar o login."
+          );
         }
 
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("registro", response.data.registro);
         this.$router.push("/menu");
       } catch (error) {
+        console.log("Recebido:(Login)" );
         console.log(error);
-        this.$global.modalAlert(
-          "error",
-          "Não foi possível complementar a operação..."
+        toastr.error(
+          error.response.data.message ??
+            "Não foi possível complementar a operação..."
         );
       }
     },
