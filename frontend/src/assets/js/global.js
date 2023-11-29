@@ -1,13 +1,14 @@
 export function loading() {
-  Swal.fire({
+  const loadingSwal = Swal.fire({
     title: "Aguarde",
     imageUrl: "/public/wait-route.gif",
     imageHeight: 250,
     background: "#FFFFFF",
     showConfirmButton: false,
     allowOutsideClick: false,
-    
   });
+
+  return loadingSwal;
 }
 
 export function modalAlert(icon, message) {

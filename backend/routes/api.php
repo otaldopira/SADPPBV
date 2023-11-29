@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // ADM ou o próprio usuário
@@ -30,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/usuarios/{registro}', [UserController::class, 'show']);
         Route::put('/usuarios/{registro}', [UserController::class, 'update']);
         Route::delete('/usuarios/{registro}', [UserController::class, 'destroy']);
+
+        // Rotas
+        Route::post('/rotas', [DijkstraController::class, 'calcularRota']);
     });
 
     // Somente ADM
@@ -37,6 +40,18 @@ Route::middleware('auth:sanctum')->group(function () {
         // USUÁRIOS
         Route::post('/usuarios', [UserController::class, 'store']);
         Route::get('/usuarios', [UserController::class, 'index']);
+
+        Route::get('/pontos', [PointController::class, 'index']);
+        Route::get('/pontos/{id}', [PointController::class, 'show']);
+        Route::delete('/pontos/{id}', [PointController::class, 'destroy']);
+        Route::put('/pontos/{id}', [PointController::class, 'update']);
+        Route::post('/pontos', [PointController::class, 'store']);
+
+        Route::post('/segmentos', [SegmentController::class, 'store']);
+        Route::get('/segmentos', [SegmentController::class, 'index']);
+        Route::get('/segmentos/{id}', [SegmentController::class, 'show']);
+        Route::put('/segmentos/{id}', [SegmentController::class, 'update']);
+        Route::delete('/segmentos/{id}', [SegmentController::class, 'destroy']);
     });
 
 });
@@ -44,17 +59,3 @@ Route::middleware('auth:sanctum')->group(function () {
 // Antes de cadastrar o ADMINISTRATOR
 // Route::post('/usuarios', [UserController::class, 'store']);
 
-
-
-
-Route::get('/pontos', [PointController::class, 'index']);
-Route::get('/pontos/{id}', [PointController::class, 'show']);
-Route::put('/pontos/{id}', [PointController::class, 'update']);
-Route::delete('/pontos/{id}', [PointController::class, 'destroy']);
-Route::post('/pontos', [PointController::class, 'store']);
-
-Route::post('/segmentos', [SegmentController::class, 'store']);
-Route::get('/segmentos', [SegmentController::class, 'index']);
-Route::get('/segmentos/{id}', [SegmentController::class, 'show']);
-
-Route::post('/rotas', [DijkstraController::class, 'calcularRota']);

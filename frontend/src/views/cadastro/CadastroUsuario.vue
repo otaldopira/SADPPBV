@@ -63,31 +63,44 @@ export default {
   },
   methods: {
     async cadastroUsuario() {
-      this.$global.loading();
-      const data = {
-        registro: this.registro,
-        nome: this.nome,
-        email: this.email,
-        senha: MD5(this.senha).toString(),
-        tipo_usuario: this.tipo_usuario,
-      };
-      console.log('Enviado:');
-      console.log(data);
       try {
+        const loadingSwal = this.$global.loading();
+        const data = {
+          registro: this.registro,
+          nome: this.nome,
+          email: this.email,
+          senha: MD5(this.senha).toString(),
+          tipo_usuario: this.tipo_usuario,
+        };
+
+        setTimeout(() => {
+          Swal.close();
+        }, 1000);
+
+        console.log("Enviado:");
+        console.log(data);
         const response = await axios.post("/usuarios", data, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
         });
-        Swal.close();
-        console.log('Recebido:');
+        console.log("Recebido:");
         console.log(response);
         if (response.data.success == false) {
-          return this.$global.modalAlert("error", response.data.message);
+          return toastr.error(
+            response.data.message ?? "Não foi possível efetuar o login."
+          );
         }
-        return this.$global.modalAlert("success", response.data.message);
+        return toastr.success(
+          response.data.message ?? "Usuário cadastrado com sucesso."
+        );
       } catch (error) {
-        this.$global.modalAlert("error", error.response.data.message ?? "Não foi possível complementar a operação...");
+        console.log("Recebido:");
+        console.log(error);
+        return toastr.error(
+          error.response.data.message ??
+            "Não foi possível complementar a operação..."
+        );
       }
     },
   },

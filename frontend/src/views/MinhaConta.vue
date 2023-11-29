@@ -89,7 +89,7 @@ export default {
       }).then(() => {
         localStorage.removeItem("registro");
         localStorage.removeItem("token");
-        this.$router.push("/entrar");
+        this.$router.push({name: "entrar"});
       });
     },
   },

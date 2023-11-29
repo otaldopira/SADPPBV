@@ -10,7 +10,8 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "vue-webview": "^0.0.34"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.3.4",

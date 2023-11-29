@@ -2,29 +2,48 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Point;
 use App\Models\Segment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SegmentController extends Controller
 {
     public function index()
     {
+        $segmentos = Segment::all();
+        $retorno = [];
+
+        foreach ($segmentos as $segmento) {
+            $ponto_inicial = Point::find($segmento->ponto_inicial);
+            $ponto_final = Point::find($segmento->ponto_final);
+            $retorno[] = [
+                "segmento_id" => $segmento['segmento_id'],
+                "ponto_inicial" => $ponto_inicial['nome'],
+                "ponto_final" => $ponto_final['nome'],
+                "status" => $segmento['status'],
+                "distancia" => $segmento['distancia'],
+                "direcao" => $segmento['direcao']
+            ];
+        }
+
         return response()->json([
-            "segmentos" => Segment::all(),
+            "segmentos" => $retorno,
             "message" => "Segmentos retornados com sucesso.",
             "success" => true
         ], 200);
     }
 
+
     public function store(Request $request)
     {
         try {
             $segmento = new Segment;
-            $segmento->ponto_inicial = $request->ponto_inicial;
-            $segmento->ponto_final = $request->ponto_final;
-            $segmento->distancia = $request->distancia;
+            $segmento->ponto_inicial = intval($request->ponto_inicial);
+            $segmento->ponto_final = intval($request->ponto_final);
+            $segmento->distancia = str_replace(',', '.', $request->distancia);
             $segmento->direcao = $request->direcao;
-            $segmento->status = $request->status;
+            $segmento->status = intval($request->status);
             $segmento->save();
 
             return response()->json([
@@ -41,22 +60,46 @@ class SegmentController extends Controller
 
     public function show($id)
     {
-        return response()->json([
-            "segmento" => Segment::findOrFail($id),
-            "message" => "Segmento retornado com sucesso.",
-            "success" => true
-        ], 200);
+        try {
+            $segmento = Segment::find($id);
+            $retorno = null;
+
+            $ponto_inicial = Point::find($segmento->ponto_inicial);
+            $ponto_final = Point::find($segmento->ponto_final);
+            $retorno = [
+                "segmento_id" => $segmento['segmento_id'],
+                "ponto_inicial" => $ponto_inicial['nome'],
+                "ponto_final" => $ponto_final['nome'],
+                "status" => $segmento['status'],
+                "distancia" => $segmento['distancia'],
+                "direcao" => $segmento['direcao']
+            ];
+
+            return response()->json([
+                "segmento" => $retorno,
+                "message" => "Segmento retornado com sucesso.",
+                "success" => true
+            ], 200);
+
+        }catch (\Exception $e){
+            return response()->json([
+                "message" => $e->getMessage(),
+                "success" => false
+            ], 400);
+        }
+
     }
 
-    public function update(Request $request, Segment $segment)
+    public function update(Request $request, $id)
     {
+        Log::channel('retorno')->info('OP - Update Segmento | Recebido:' . $id . json_encode($request->all()));
         try {
-            $segmento = Segment::findOrFail($segment);
-            $segmento->ponto_inicial = $request->ponto_inicial;
-            $segmento->ponto_final = $request->ponto_final;
-            $segmento->distancia = $request->distancia;
+            $segmento = Segment::findOrFail($id);
+            $segmento->ponto_inicial = intval($request->ponto_inicial);
+            $segmento->ponto_final = intval($request->ponto_final);
+            $segmento->distancia = str_replace(',', '.', $request->distancia);
             $segmento->direcao = $request->direcao;
-            $segmento->status = $request->status;
+            $segmento->status = intval($request->status);
             $segmento->save();
 
             return response()->json([
@@ -71,11 +114,12 @@ class SegmentController extends Controller
         }
     }
 
-    public function destroy(Segment $segment)
+    public function destroy($id)
     {
+        Log::channel('retorno')->info('OP - Update Segmento | Recebido:' . $id);
         try {
-            $segmento = Segment::findOrFail($segment);
-            $segmento->destroy();
+            $segmento = Segment::findOrFail($id);
+            $segmento->delete();
 
             return response()->json([
                 "message" => "Segmento removido com sucesso.",

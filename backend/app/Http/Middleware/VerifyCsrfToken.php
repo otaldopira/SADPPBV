@@ -14,10 +14,10 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         "login",
         "logout",
-        "usuarios",
-        "pontos",
-        "segmentos",
-        "rotas",
-        "api"
+        "api",
+        "pontos/*",
+        "segmentos/*",
+        "rotas/*",
+        "usuarios/*"
     ];
 }

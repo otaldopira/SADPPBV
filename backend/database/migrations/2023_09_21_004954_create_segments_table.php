@@ -12,11 +12,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('segments', function (Blueprint $table) {
-            $table->id();
+            $table->id('segmento_id');
             $table->foreignId('ponto_inicial')
-                ->constrained('points');
+                ->constrained('points', 'ponto_id');
             $table->foreignId('ponto_final')
-                ->constrained('points');
+                ->constrained('points', 'ponto_id');
             $table->decimal('distancia', 8, 2);
             $table->string('direcao');
             $table->boolean('status')->default(0);

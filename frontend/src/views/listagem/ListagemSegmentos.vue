@@ -3,29 +3,37 @@
     <table class="display py-8" id="dataTable">
       <thead>
         <tr>
-          <th>Registro</th>
-          <th>Nome</th>
-          <th>E-mail</th>
-          <th>Tipo Usuário</th>
+          <th>Início</th>
+          <th>Fim</th>
+          <th>Distância</th>
+          <th>Direção</th>
+          <th>Status</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        <template v-for="(usuario, index) in usuarios">
+        <template v-for="(segmento, index) in segmentos">
           <tr>
-            <td>{{ usuario.registro }}</td>
-            <td>{{ usuario.nome }}</td>
-            <td>{{ usuario.email }}</td>
-            <td>{{ usuario.tipo_usuario == 1 ? "Administrador" : "Comum" }}</td>
+            <td>{{ segmento.ponto_inicial }}</td>
+            <td>{{ segmento.ponto_final }}</td>
+            <td>{{ segmento.distancia }}</td>
+            <td>{{ segmento.direcao }}</td>
             <td>
+              <div
+                :class="{ ativo: segmento.status == 1, inativo: segmento.status == 0 }"
+              >
+                {{ segmento.status == 1 ? "Ativo" : "Inativo" }}
+              </div>
+            </td>
+            <td class="w-1/5">
               <div class="inline-flex gap-3 cursor-pointer">
                 <span
                   class="material-symbols-rounded text-yellow-500"
-                  @click="editarUsuario(usuario.registro)"
+                  @click="editarPonto(segmento.segmento_id)"
                 >
                   edit </span
                 ><span
-                  @click="modalConfirm(usuario.registro, index)"
+                  @click="modalConfirm(segmento.segmento_id, index)"
                   class="material-symbols-rounded text-red-500"
                 >
                   delete
@@ -41,15 +49,15 @@
 <script>
 export default {
   methods: {
-    editarUsuario(registro) {
+    editarPonto(id) {
       this.$router.push({
-        name: "editar-usuario",
-        params: { id: registro },
+        name: "editar-segmento",
+        params: { id: id },
       });
     },
-    async buscarUsuarios() {
+    async buscarSegmentos() {
       this.$global.loading();
-      var webApiUrl = "/usuarios";
+      var webApiUrl = "/segmentos";
 
       try {
         const response = await axios.get(webApiUrl).then(
@@ -62,14 +70,19 @@ export default {
         console.log(response);
 
         if (response.data.success == true) {
-          this.success = true
-          this.usuarios = response.data.usuarios;
+          this.success = true;
+          this.segmentos = response.data.segmentos;
           this.$nextTick(() => {
             $("#dataTable").DataTable(this.opcoes);
           });
+          return toastr.success(
+            response.data ? response.data.message : "Segmentos recuperados."
+          );
         } else {
           return toastr.error(
-            response.data.message ?? "Não foi possível recuperar os usuários."
+            response.data
+              ? response.data.message
+              : "Não foi possível recuperar os Segmentos."
           );
         }
       } catch (error) {
@@ -77,14 +90,15 @@ export default {
         console.log(error);
 
         return toastr.error(
-          error.response.data.message ??
-            "Não foi possível complementar a operação..."
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
         );
       }
     },
-    modalConfirm(registro, index) {
+    modalConfirm(id, index) {
       Swal.fire({
-        title: "Você realmente deseja remover este usuário ?",
+        title: "Você realmente deseja remover este Segmento ?",
         icon: "warning",
         showCancelButton: true,
         focusCancel: true,
@@ -94,69 +108,65 @@ export default {
         cancelButtonText: "Não",
       }).then((result) => {
         if (result.isConfirmed) {
-          this.removerConta(registro, index);
+          this.removerSegmento(id, index);
         }
       });
     },
-    async removerConta(registro, index) {
+    async removerSegmento(id, index) {
       try {
-        const response = await axios.delete(`/usuarios/${registro}`);
+        const response = await axios.delete(`/segmentos/${id}`);
         console.log("Recebido:");
         console.log(response);
 
         if (response.data.success == false) {
-           return toastr.error(
-            response.data.message ?? "Não foi possível remover sua conta."
-          );
+          return toastr.error(response.data.message);
         }
 
         console.log(response);
-        this.usuarios.splice(index, 1);
-
-        if (localStorage.getItem("registro") == registro) {
-          localStorage.removeItem("registro");
-          localStorage.removeItem("token");
-          this.$router.push({name: "entrar"});
-          return this.modalSucesso("Conta removida", "Você será deslogado!");
-        }
+        this.segmentos.splice(index, 1);
 
         return this.modalSucesso();
-        
       } catch (error) {
         console.log("Recebido:");
         console.log(error);
         return toastr.error(
-          error.response.data.message ??
-            "Não foi possível complementar a operação..."
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
         );
       }
     },
     modalSucesso(title, subtitle) {
       Swal.fire({
         confirmButtonColor: "#3085d6",
-        title: title ?? "Usuário removido",
+        title: title ?? "Ponto removido",
         text: subtitle ?? " ",
         icon: "success",
       });
     },
   },
   created() {
-    this.buscarUsuarios();
+    this.buscarSegmentos();
   },
   data() {
     return {
-      usuarios: [],
+      segmentos: [],
       success: false,
       opcoes: {
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
         },
       },
-      breadcrumbs: [
-        { text: "Painel", to: "/painel" },
-        { text: "Colaboradores", to: "" },
-      ],
     };
   },
 };
 </script>
+<style>
+.ativo {
+  @apply inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-500 text-white;
+}
+
+.inativo {
+  @apply inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white;
+}
+</style>

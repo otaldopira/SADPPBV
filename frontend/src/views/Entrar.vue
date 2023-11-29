@@ -10,7 +10,6 @@ export default {
       },
     };
   },
-  mounted() {},
   methods: {
     abrirModal() {
       Swal.fire({
@@ -62,17 +61,37 @@ export default {
 
         if (response.data.success == false) {
           toastr.error(
-            response.data.message ?? "Não foi possível efetuar o login."
+            (response.data.message ?? "Não foi possível efetuar o login.")
           );
         }
 
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("registro", response.data.registro);
-        this.$router.push("/menu");
+        if (response.data.registro) {
+          this.buscarUsuario(response.data.registro);
+        }
+        this.$router.push({ name: "menu" });
       } catch (error) {
-        console.log("Recebido:(Login)" );
-        console.log(error);
         toastr.error(
+          error.response.data.message ??
+            "Não foi possível complementar a operação..."
+        );
+      }
+    },
+    async buscarUsuario(registro) {
+      var webApiUrl = `/usuarios/${registro}`;
+
+      try {
+        const response = await axios.get(webApiUrl);
+
+        if (response.data.success == true) {
+          localStorage.setItem(
+            "usuario",
+            JSON.stringify(response.data.usuario)
+          );
+        }
+      } catch (error) {
+        return toastr.error(
           error.response.data.message ??
             "Não foi possível complementar a operação..."
         );
@@ -82,7 +101,7 @@ export default {
 };
 </script>
 <template>
-  <div class="m-auto h-full flex justify-center items-center mt-auto">
+  <div class="m-auto h-screen flex justify-center items-center">
     <div
       class="overflow-y-hidden w-2/5 h-4/5 p-6 flex flex-col gap-3 bg-white justify-center items-center rounded-md shadow-md"
     >

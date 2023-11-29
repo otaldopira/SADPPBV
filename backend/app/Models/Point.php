@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Point extends Model
 {
     use HasFactory;
-
+    protected $primaryKey = 'ponto_id';
     protected $fillable = ['nome'];
 }

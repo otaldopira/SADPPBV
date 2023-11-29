@@ -65,6 +65,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'retorno' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/retorno.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

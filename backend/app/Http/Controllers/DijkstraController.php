@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use stdClass;
 
 class DijkstraController extends Controller
@@ -11,17 +12,18 @@ class DijkstraController extends Controller
     public function calcularRota(Request $request)
     {
         try {
-
+            Log::channel('retorno')->info('OP - Rota | Recebido:' . json_encode($request->all()));
             $origem = strtolower(trim($request->origem));
             $destino = strtolower(trim($request->destino));
 
             $origem_id = DB::table('points')
                 ->whereRaw("LOWER(TRIM(nome)) = ?", [$origem])
-                ->value('id');
+                ->value('ponto_id');
 
             $destino_id = DB::table('points')
                 ->whereRaw("LOWER(TRIM(nome)) = ?", [$destino])
-                ->value('id');
+                ->value('ponto_id');
+
 
             if (!$origem_id || !$destino_id) {
                 return response()->json([
@@ -36,7 +38,7 @@ class DijkstraController extends Controller
             // Cria um array associativo para mapear IDs de locais para nomes.
             $pontosMap = [];
             foreach ($pontos as $ponto) {
-                $pontosMap[$ponto->id] = $ponto->nome;
+                $pontosMap[$ponto->ponto_id] = $ponto->nome;
             }
 
             // Obtém os segmentos do banco de dados.
@@ -48,7 +50,7 @@ class DijkstraController extends Controller
             // Inicializa as distâncias mínimas para todos os locais com infinito, exceto para o local de origem.
             $distancias = [];
             foreach ($pontos as $ponto) {
-                $distancias[$ponto->id] = INF;
+                $distancias[$ponto->ponto_id] = INF;
             }
             $distancias[$origem_id] = 0;
 
@@ -58,9 +60,10 @@ class DijkstraController extends Controller
                 $minLocation = null;
 
                 foreach ($pontos as $ponto) {
-                    if (!in_array($ponto->id, $visitado) && $distancias[$ponto->id] < $minDistance) {
-                        $minDistance = $distancias[$ponto->id];
-                        $minLocation = $ponto->id;
+
+                    if (!in_array($ponto->ponto_id, $visitado) && $distancias[$ponto->ponto_id] < $minDistance) {
+                        $minDistance = $distancias[$ponto->ponto_id];
+                        $minLocation = $ponto->ponto_id;
                     }
                 }
                 // Marca o nó atual como visitado.
@@ -83,10 +86,14 @@ class DijkstraController extends Controller
                 $segmentoEncontrado = null;
                 foreach ($segments as $segment) {
                     if ($segment->ponto_final == $destinoAtual && $distancias[$segment->ponto_inicial] + $segment->distancia == $distancias[$destinoAtual]) {
+
                         $destinoAtual = $segment->ponto_inicial;
+
                         // Encontra o segmento pelo ID do segmento
-                        $segmentoCompleto = $this->encontrarSegmentoPorID($segments, $segment->id);
+                        $segmentoCompleto = $this->encontrarSegmentoPorID($segments, $segment->segmento_id);
+
                         if ($segmentoCompleto) {
+
                             $segmentoEncontrado = $segmentoCompleto;
                         }
                         break;
@@ -141,7 +148,7 @@ class DijkstraController extends Controller
     private function encontrarSegmentoPorID($segments, $segmentoId)
     {
         foreach ($segments as $segment) {
-            if ($segment->id == $segmentoId) {
+            if ($segment->segmento_id == $segmentoId) {
                 return $segment;
             }
         }

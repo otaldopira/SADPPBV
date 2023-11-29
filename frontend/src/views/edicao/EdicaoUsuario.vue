@@ -24,7 +24,7 @@
         tipo="password"
         placeholder="Senha"
       ></input-universal>
-      <select
+      <!-- <select
         :class="{ 'text-gray-500': tipo_usuario != 0 && tipo_usuario !== 1 }"
         v-model="tipo_usuario"
         class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
@@ -32,7 +32,7 @@
         <option selected disabled value="3">Selecione o tipo de usuário</option>
         <option value="0">Comum</option>
         <option value="1">Administrador</option>
-      </select>
+      </select> -->
       <div class="text-center">
         <button
           @click="atualizarUsuario"
@@ -131,7 +131,8 @@ export default {
           response.data.message ?? "Usuário editado com sucesso."
         );
       } catch (error) {
-        console.log("Recebido:" + error);
+        console.log("Recebido:");
+        console.log(error);
         return toastr.error(
           error.response.data.message ??
             "Não foi possível complementar a operação..."

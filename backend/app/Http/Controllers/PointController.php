@@ -4,17 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Point;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PointController extends Controller
 {
 
     public function index()
     {
-        return response()->json([
-            "pontos" => Point::all(),
-            "message" => "Pontos retornados com sucesso.",
-            "success" => true
-        ], 200);
+
+        try {
+            $pontos = Point::all();
+
+            if ($pontos == null) {
+                return response()->json([
+                    "message" => "Pontos não encontrado.",
+                    "success" => false
+                ], 400);
+            }
+            $retorno = [];
+
+            return response()->json([
+                "pontos" => $pontos,
+                "message" => "Pontos retornados com sucesso.",
+                "success" => true
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => $e->getMessage(),
+                "success" => false
+            ], 400);
+        }
+
     }
 
     public function store(Request $request)
@@ -38,18 +59,45 @@ class PointController extends Controller
 
     public function show($id)
     {
-        return response()->json([
-            "pontos" => Point::findOrFail($id),
-            "message" => "Ponto retornado com sucesso.",
-            "success" => true
-        ], 200);
+        try {
+            $ponto = Point::find($id);
+
+            if ($ponto == null) {
+                return response()->json([
+                    "message" => "Ponto não encontrado.",
+                    "success" => false
+                ], 400);
+            }
+
+            return response()->json([
+                "ponto" => $ponto,
+                "message" => "Ponto retornado com sucesso.",
+                "success" => true
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => $e->getMessage(),
+                "success" => false
+            ], 400);
+        }
+
     }
 
     public function update(Request $request, $id)
     {
+        Log::channel('retorno')->info('OP - Update Ponto | Recebido:' . json_encode($request->all()));
         try {
 
-            $ponto = Point::findOrFail($id);
+            $ponto = Point::find($id);
+
+            if ($ponto == null) {
+                return response()->json([
+                    "message" => "Ponto não encontrado.",
+                    "success" => false
+                ], 400);
+            }
+
             $ponto->nome = $request->nome;
             $ponto->save();
 
@@ -57,6 +105,7 @@ class PointController extends Controller
                 "message" => "Ponto atualizado com sucesso.",
                 "success" => true
             ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 "message" => $e->getMessage(),

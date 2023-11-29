@@ -3,29 +3,25 @@
     <table class="display py-8" id="dataTable">
       <thead>
         <tr>
-          <th>Registro</th>
+          <th>ID</th>
           <th>Nome</th>
-          <th>E-mail</th>
-          <th>Tipo Usuário</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        <template v-for="(usuario, index) in usuarios">
+        <template v-for="(ponto, index) in pontos">
           <tr>
-            <td>{{ usuario.registro }}</td>
-            <td>{{ usuario.nome }}</td>
-            <td>{{ usuario.email }}</td>
-            <td>{{ usuario.tipo_usuario == 1 ? "Administrador" : "Comum" }}</td>
-            <td>
+            <td class="w-1/6">{{ ponto.ponto_id }}</td>
+            <td>{{ ponto.nome }}</td>
+            <td class="w-1/5">
               <div class="inline-flex gap-3 cursor-pointer">
                 <span
                   class="material-symbols-rounded text-yellow-500"
-                  @click="editarUsuario(usuario.registro)"
+                  @click="editarPonto(ponto.ponto_id)"
                 >
                   edit </span
                 ><span
-                  @click="modalConfirm(usuario.registro, index)"
+                  @click="modalConfirm(ponto.ponto_id, index)"
                   class="material-symbols-rounded text-red-500"
                 >
                   delete
@@ -39,17 +35,17 @@
   </div>
 </template>
 <script>
-export default {
+export default {  
   methods: {
-    editarUsuario(registro) {
+    editarPonto(id) {
       this.$router.push({
-        name: "editar-usuario",
-        params: { id: registro },
+        name: "editar-ponto",
+        params: { id: id },
       });
     },
-    async buscarUsuarios() {
+    async buscarPontos() {
       this.$global.loading();
-      var webApiUrl = "/usuarios";
+      var webApiUrl = "/pontos";
 
       try {
         const response = await axios.get(webApiUrl).then(
@@ -62,14 +58,19 @@ export default {
         console.log(response);
 
         if (response.data.success == true) {
-          this.success = true
-          this.usuarios = response.data.usuarios;
+          this.success = true;
+          this.pontos = response.data.pontos;
           this.$nextTick(() => {
             $("#dataTable").DataTable(this.opcoes);
           });
+          return toastr.success(
+            response.data ? response.data.message : "Pontos recuperados."
+          );
         } else {
           return toastr.error(
-            response.data.message ?? "Não foi possível recuperar os usuários."
+            response.data
+              ? response.data.message
+              : "Não foi possível recuperar os pontos."
           );
         }
       } catch (error) {
@@ -77,14 +78,15 @@ export default {
         console.log(error);
 
         return toastr.error(
-          error.response.data.message ??
-            "Não foi possível complementar a operação..."
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
         );
       }
     },
-    modalConfirm(registro, index) {
+    modalConfirm(id, index) {
       Swal.fire({
-        title: "Você realmente deseja remover este usuário ?",
+        title: "Você realmente deseja remover este ponto ?",
         icon: "warning",
         showCancelButton: true,
         focusCancel: true,
@@ -94,68 +96,55 @@ export default {
         cancelButtonText: "Não",
       }).then((result) => {
         if (result.isConfirmed) {
-          this.removerConta(registro, index);
+          this.removerPonto(id, index);
         }
       });
     },
-    async removerConta(registro, index) {
+    async removerPonto(id, index) {
       try {
-        const response = await axios.delete(`/usuarios/${registro}`);
+        const response = await axios.delete(`/pontos/${id}`);
         console.log("Recebido:");
         console.log(response);
 
         if (response.data.success == false) {
-           return toastr.error(
-            response.data.message ?? "Não foi possível remover sua conta."
-          );
+          return toastr.error(response.data.message);
         }
 
         console.log(response);
-        this.usuarios.splice(index, 1);
-
-        if (localStorage.getItem("registro") == registro) {
-          localStorage.removeItem("registro");
-          localStorage.removeItem("token");
-          this.$router.push({name: "entrar"});
-          return this.modalSucesso("Conta removida", "Você será deslogado!");
-        }
+        this.pontos.splice(index, 1);
 
         return this.modalSucesso();
-        
       } catch (error) {
         console.log("Recebido:");
         console.log(error);
         return toastr.error(
-          error.response.data.message ??
-            "Não foi possível complementar a operação..."
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
         );
       }
     },
     modalSucesso(title, subtitle) {
       Swal.fire({
         confirmButtonColor: "#3085d6",
-        title: title ?? "Usuário removido",
+        title: title ?? "Ponto removido",
         text: subtitle ?? " ",
         icon: "success",
       });
     },
   },
   created() {
-    this.buscarUsuarios();
+    this.buscarPontos();
   },
   data() {
     return {
-      usuarios: [],
+      pontos: [],
       success: false,
       opcoes: {
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
         },
       },
-      breadcrumbs: [
-        { text: "Painel", to: "/painel" },
-        { text: "Colaboradores", to: "" },
-      ],
     };
   },
 };
