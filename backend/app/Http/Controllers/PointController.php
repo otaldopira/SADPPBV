@@ -11,7 +11,7 @@ class PointController extends Controller
 
     public function index()
     {
-
+        Log::channel('retorno')->info('OP - Listar Pontos | Recebido: ');
         try {
             $pontos = Point::all();
 
@@ -40,6 +40,7 @@ class PointController extends Controller
 
     public function store(Request $request)
     {
+        Log::channel('retorno')->info('OP - Cadastrar Ponto | Recebido: ' . json_encode($request->all()));
         try {
             $ponto = new Point;
             $ponto->nome = $request->nome;
@@ -59,6 +60,7 @@ class PointController extends Controller
 
     public function show($id)
     {
+        Log::channel('retorno')->info('OP - Listar Ponto | Recebido: ID:' . $id);
         try {
             $ponto = Point::find($id);
 
@@ -86,7 +88,7 @@ class PointController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::channel('retorno')->info('OP - Update Ponto | Recebido:' . json_encode($request->all()));
+        Log::channel('retorno')->info('OP - Atualizar Ponto | Recebido: ID: ' . $id . json_encode($request->all()));
         try {
 
             $ponto = Point::find($id);
@@ -116,6 +118,7 @@ class PointController extends Controller
 
     public function destroy($id)
     {
+        Log::channel('retorno')->info('OP - Remover Ponto | Recebido: ID: ' . $id);
         try {
 
             $ponto = Point::findOrFail($id);
@@ -128,7 +131,7 @@ class PointController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                "message" => $e->getMessage(),
+                "message" => "Este ponto está sendo usado por algum segmento.",
                 "success" => false
             ], 400);
         }

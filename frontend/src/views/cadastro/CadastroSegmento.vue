@@ -3,16 +3,45 @@
     <div class="bg-white p-8 rounded-lg shadow-lg w-2/5 flex flex-col gap-3">
       <h2 class="text-2xl mb-4 text-center font-bold">Cadastro de Segmento</h2>
       <!-- Formulário de cadastro -->
-      <input-universal
+      <!-- <input-universal
         v-model:valor="ponto_inicial"
         tipo="text"
         placeholder="Início"
-      ></input-universal>
-      <input-universal
+      ></input-universal> -->
+      <!-- <input-universal
         v-model:valor="ponto_final"
         tipo="text"
         placeholder="Fim"
-      ></input-universal>
+      ></input-universal> -->
+      <select
+        :class="{ 'text-gray-500': status != 0 && status != 1 }"
+        v-model="ponto_inicial"
+        class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+      >
+        <option selected disabled value="null">Selecione Ponto Inicial</option>
+        <option
+          v-for="(ponto, index) in pontos"
+          :key="index"
+          :value="ponto.ponto_id"
+        >
+          {{ ponto.nome }}
+        </option>
+      </select>
+      <select
+        :class="{ 'text-gray-500': status != 0 && status != 1 }"
+        v-model="ponto_final"
+        class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+      >
+        <option selected disabled value="null">Selecione Ponto Final</option>
+        <option
+          v-for="(ponto, index) in pontos"
+          :key="index"
+          :value="ponto.ponto_id"
+        >
+          {{ ponto.nome }}
+        </option>
+      </select>
+
       <input-universal
         v-model:valor="distancia"
         tipo="number"
@@ -50,6 +79,7 @@ import InputUniversal from "/src/components/Input.vue";
 export default {
   data() {
     return {
+      pontos: [],
       ponto_inicial: null,
       ponto_final: null,
       distancia: null,
@@ -57,18 +87,52 @@ export default {
       status: 2,
     };
   },
-
+  watch: {
+    ponto_inicial(ponto_inicial) {
+      console.log(ponto_inicial);
+    },
+  },
   components: {
     "input-universal": InputUniversal,
   },
-
+  created() {
+    this.buscarPontos();
+  },
   methods: {
-    verPontos() {
-      Swal.fire({
-        title: "<i>Pontos</i>",
-        html: ``,
-        confirmButtonText: "Fechar",
-      });
+    async buscarPontos() {
+      this.$global.loading();
+      var webApiUrl = "/pontos";
+      try {
+        const response = await axios.get(webApiUrl);
+
+        console.log("Recebido:");
+        console.log(response);
+
+        if (response.data.success == true) {
+          this.success = true;
+          this.pontos = response.data.pontos.sort((a, b) => {
+            var x = a.nome.toLowerCase();
+            var y = b.nome.toLowerCase();
+            return x < y ? -1 : x > y ? 1 : 0;
+          });
+          this.$nextTick(() => {
+            $("#dataTable").DataTable(this.opcoes);
+          });
+        }
+      } catch (error) {
+        console.log("Recebido:");
+        console.log(error);
+
+        return toastr.error(
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
+        );
+      } finally {
+        setTimeout(() => {
+          Swal.close();
+        }, 1000);
+      }
     },
     async cadastroSegmento() {
       try {
@@ -82,11 +146,7 @@ export default {
         };
         console.log("Enviado:");
         console.log(data);
-        const response = await axios.post("/segmentos", data).then(
-          setTimeout(() => {
-            Swal.close();
-          }, 1000)
-        );
+        const response = await axios.post("/segmentos", data);
 
         console.log("Recebido:");
         console.log(response);
@@ -103,6 +163,10 @@ export default {
             ? error.response.data.message
             : "Não foi possível complementar a operação..."
         );
+      } finally {
+        setTimeout(() => {
+          Swal.close();
+        }, 1000);
       }
     },
   },

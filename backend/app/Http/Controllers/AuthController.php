@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -62,10 +63,15 @@ class AuthController extends Controller
                 "message" => $e->getMessage(),
             ],400);
         }
+    }
 
+    public function usuariosConectados()
+    {
+        $usuariosConectados = DB::table('personal_access_tokens')
+            ->join('users', 'personal_access_tokens.tokenable_id', '=', 'users.registro')
+            ->select('users.registro','users.nome', 'personal_access_tokens.created_at')
+            ->get();
 
-
-
-
+        return response()->json($usuariosConectados);
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-4/5 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4"
+    class="w-full md:w-11/12 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4"
   >
     <!-- Cadastro User -->
     <Card
@@ -16,8 +16,7 @@
       title="Listagem de Usuários"
       route="listar-usuarios"
     ></Card>
-    <!-- Meu Perfil -->
-    <Card icon="identifier" title="Minha Conta" route="minha-conta"></Card>
+
     <Card
       v-show="tipo_usuario == 1"
       icon="marker"
@@ -41,6 +40,16 @@
       icon="list-segment"
       title="Listagem de Segmentos"
       route="listar-segmentos"
+    ></Card>
+    <!-- Rota -->
+    <Card icon="route" title="Traçar Rota" route="rota"></Card>
+    <!-- Meu Perfil -->
+    <Card icon="identifier" title="Minha Conta" route="minha-conta"></Card>
+    <Card
+      v-show="tipo_usuario == 1"
+      icon="world"
+      title="Usuários Conectados"
+      route="usuarios-conectados"
     ></Card>
   </div>
 </template>

@@ -35,33 +35,29 @@ export default {
       });
     },
     async tentativaLogin() {
-      this.$global.loading();
-
-      const data = {
-        registro: this.form.registro,
-        senha: MD5(this.form.senha).toString(),
-      };
-
-      console.log("Enviado:(Login)");
-      console.log(data);
-
       try {
+        this.$global.loading();
+
+        const data = {
+          registro: this.form.registro,
+          senha: MD5(this.form.senha).toString(),
+        };
+
+        console.log("Enviado:(Login)");
+        console.log(data);
+
         const response = await axios({
           method: "post",
           url: "/login",
           data: data,
-        }).then(
-          setTimeout(() => {
-            Swal.close();
-          }, 1000)
-        );
+        });
 
         console.log("Recebido:(Login)");
         console.log(response);
 
         if (response.data.success == false) {
           toastr.error(
-            (response.data.message ?? "Não foi possível efetuar o login.")
+            response.data.message ?? "Não foi possível efetuar o login."
           );
         }
 
@@ -70,8 +66,10 @@ export default {
         if (response.data.registro) {
           this.buscarUsuario(response.data.registro);
         }
-        this.$router.push({ name: "menu" });
       } catch (error) {
+        setTimeout(() => {
+          Swal.close();
+        }, 1000);
         toastr.error(
           error.response.data.message ??
             "Não foi possível complementar a operação..."
@@ -79,7 +77,8 @@ export default {
       }
     },
     async buscarUsuario(registro) {
-      var webApiUrl = `/usuarios/${registro}`;
+      const reg = registro;
+      var webApiUrl = `/usuarios/` + reg;
 
       try {
         const response = await axios.get(webApiUrl);
@@ -90,11 +89,13 @@ export default {
             JSON.stringify(response.data.usuario)
           );
         }
+        this.$router.push({ name: "menu" });
       } catch (error) {
-        return toastr.error(
-          error.response.data.message ??
-            "Não foi possível complementar a operação..."
-        );
+       
+      } finally {
+        setTimeout(() => {
+          Swal.close();
+        }, 1000);
       }
     },
   },

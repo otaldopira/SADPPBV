@@ -2,7 +2,7 @@
   <div class="flex justify-center pt-5">
     <div class="bg-white p-8 rounded-lg shadow-lg w-2/5 flex flex-col gap-3">
       <!-- Formulário de cadastro -->
-      <input-universal
+      <!-- <input-universal
         v-model:valor="ponto_inicial"
         tipo="text"
         placeholder="Início"
@@ -11,7 +11,35 @@
         v-model:valor="ponto_final"
         tipo="text"
         placeholder="Fim"
-      ></input-universal>
+      ></input-universal> -->
+      <select
+        :class="{ 'text-gray-500': status != 0 && status != 1 }"
+        v-model="ponto_inicial"
+        class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+      >
+        <option selected disabled value="null">Selecione Ponto Inicial</option>
+        <option
+          v-for="(ponto, index) in pontos"
+          :key="index"
+          :value="ponto.ponto_id"
+        >
+          {{ ponto.nome }}
+        </option>
+      </select>
+      <select
+        :class="{ 'text-gray-500': status != 0 && status != 1 }"
+        v-model="ponto_final"
+        class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+      >
+        <option selected disabled value="null">Selecione Ponto Final</option>
+        <option
+          v-for="(ponto, index) in pontos"
+          :key="index"
+          :value="ponto.ponto_id"
+        >
+          {{ ponto.nome }}
+        </option>
+      </select>
       <input-universal
         v-model:valor="distancia"
         tipo="number"
@@ -61,40 +89,43 @@ export default {
     "input-universal": InputUniversal,
   },
   created() {
-    this.buscarPontos().then(this.buscarSegmento());
+    this.buscarPontos();
   },
   methods: {
     async buscarPontos() {
-      this.$global.loading();
-      var webApiUrl = "/pontos";
-      new Promise(async (resolve) => {
-        try {
-          const response = await axios.get(webApiUrl);
+      try {
+        this.$global.loading();
+        var webApiUrl = "/pontos";
 
-          console.log("Recebido:");
-          console.log(response);
+        const response = await axios.get(webApiUrl);
+        console.log("Recebido:");
+        console.log(response);
 
-          if (response.data.success == true) {
-            this.pontos = response.data.pontos;
-            resolve();
-          } else {
-            return toastr.error(
-              response.data
-                ? response.data.message
-                : "Não foi possível recuperar os pontos."
-            );
-          }
-        } catch (error) {
-          console.log("Recebido:");
-          console.log(error);
+        if (response.data.success == true) {
+          this.pontos = response.data.pontos.sort((a, b) => {
+            var x = a.nome.toLowerCase();
+            var y = b.nome.toLowerCase();
+            return x < y ? -1 : x > y ? 1 : 0;
+          });
 
+          return this.buscarSegmento();
+        } else {
           return toastr.error(
-            error.response
-              ? error.response.data.message
-              : "Não foi possível complementar a operação..."
+            response.data
+              ? response.data.message
+              : "Não foi possível recuperar os pontos."
           );
         }
-      });
+      } catch (error) {
+        console.log("Recebido:");
+        console.log(error);
+
+        return toastr.error(
+          error.response
+            ? error.response.data.message
+            : "Não foi possível complementar a operação..."
+        );
+      }
     },
     async buscarSegmento() {
       const webApiUrl = `/segmentos/${this.$route.params.id}`;

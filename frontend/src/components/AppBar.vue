@@ -1,5 +1,5 @@
 <template>
-  <nav class="relative py-3 bg-yellow-500 mb-3 text-white rounded-b-xl">
+  <nav class="relative py-1 bg-yellow-400 mb-3 text-white rounded-b-xl shadow-md">
     <div class="w-full flex justify-between items-center px-8">
       <!-- LOGO -->
       <div>
@@ -7,14 +7,14 @@
           class="text-md font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase"
           to="/menu"
         >
-          <img width="80" src="../assets/imagens/UTFPR.png" alt="UTFPR LOGO" />
+          <img width="60" src="../assets/imagens/UTFPR.png" alt="UTFPR LOGO" />
         </router-link>
       </div>
       <!-- Logout -->
       <div>
         <ul class="cursor-pointer">
           <li class="nav-item" @click="logout">
-            <span class="material-symbols-rounded font-bold"> logout </span>
+            <span class="material-symbols-rounded font-semibold text-gray-800"> logout </span>
           </li>
         </ul>
       </div>

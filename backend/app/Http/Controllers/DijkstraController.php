@@ -12,7 +12,7 @@ class DijkstraController extends Controller
     public function calcularRota(Request $request)
     {
         try {
-            Log::channel('retorno')->info('OP - Rota | Recebido:' . json_encode($request->all()));
+            Log::channel('retorno')->info('OP - Calcular Rota | Recebido:' . json_encode($request->all()));
             $origem = strtolower(trim($request->origem));
             $destino = strtolower(trim($request->destino));
 
@@ -90,7 +90,7 @@ class DijkstraController extends Controller
                         $destinoAtual = $segment->ponto_inicial;
 
                         // Encontra o segmento pelo ID do segmento
-                        $segmentoCompleto = $this->encontrarSegmentoPorID($segments, $segment->segmento_id);
+                        $segmentoCompleto = $this->encontrarSegmentoPorID($segments, $segment->segmento_id, $pontos);
 
                         if ($segmentoCompleto) {
 
@@ -106,6 +106,7 @@ class DijkstraController extends Controller
                         "success" => false
                     ], 404);
                 }
+
                 $caminho[] = $segmentoEncontrado;
             }
 
@@ -145,14 +146,29 @@ class DijkstraController extends Controller
 
     }
 
-    private function encontrarSegmentoPorID($segments, $segmentoId)
+    private function encontrarSegmentoPorID($segments, $segmentoId, $pontos)
     {
         foreach ($segments as $segment) {
             if ($segment->segmento_id == $segmentoId) {
+                $pontoInicial = $this->findPointById($pontos, $segment->ponto_inicial);
+                $pontoFinal = $this->findPointById($pontos, $segment->ponto_final);
+
+                $segment->ponto_inicial = $pontoInicial;
+                $segment->ponto_final = $pontoFinal;
+
                 return $segment;
             }
         }
         return null;
+    }
+
+    private function findPointById($pontos, $pontoId)
+    {
+        foreach ($pontos as $ponto) {
+            if ($pontoId == $ponto->ponto_id ) {
+                return $ponto->nome;
+            }
+        }
     }
 
 

@@ -55,6 +55,11 @@ const router = createRouter({
           component: () => import("../views/listagem/ListagemUsuario.vue"),
         },
         {
+          path: "usuarios-conectados",
+          name: "usuarios-conectados",
+          component: () => import("../views/listagem/ListagemConectados.vue"),
+        },
+        {
           path: "listar-pontos",
           name: "listar-pontos",
           component: () => import("../views/listagem/ListagemPontos.vue"),
@@ -63,6 +68,11 @@ const router = createRouter({
           path: "listar-segmentos",
           name: "listar-segmentos",
           component: () => import("../views/listagem/ListagemSegmentos.vue"),
+        },
+        {
+          path: "rota",
+          name: "rota",
+          component: () => import("../views/TracarRota.vue"),
         },
         {
           path: "minha-conta",

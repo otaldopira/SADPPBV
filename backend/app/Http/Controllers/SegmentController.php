@@ -11,6 +11,7 @@ class SegmentController extends Controller
 {
     public function index()
     {
+        Log::channel('retorno')->info('OP - Listar Segmentos | Recebido: ');
         $segmentos = Segment::all();
         $retorno = [];
 
@@ -37,6 +38,7 @@ class SegmentController extends Controller
 
     public function store(Request $request)
     {
+        Log::channel('retorno')->info('OP - Cadastrar Segmento | Recebido: ' . json_encode($request->all()));
         try {
             $segmento = new Segment;
             $segmento->ponto_inicial = intval($request->ponto_inicial);
@@ -60,6 +62,7 @@ class SegmentController extends Controller
 
     public function show($id)
     {
+        Log::channel('retorno')->info('OP - Listar Segmento | Recebido: ID:' . $id);
         try {
             $segmento = Segment::find($id);
             $retorno = null;
@@ -81,7 +84,7 @@ class SegmentController extends Controller
                 "success" => true
             ], 200);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 "message" => $e->getMessage(),
                 "success" => false
@@ -92,7 +95,7 @@ class SegmentController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::channel('retorno')->info('OP - Update Segmento | Recebido:' . $id . json_encode($request->all()));
+        Log::channel('retorno')->info('OP - Atualizar Segmento | Recebido: ID:' . $id . json_encode($request->all()));
         try {
             $segmento = Segment::findOrFail($id);
             $segmento->ponto_inicial = intval($request->ponto_inicial);
@@ -116,7 +119,7 @@ class SegmentController extends Controller
 
     public function destroy($id)
     {
-        Log::channel('retorno')->info('OP - Update Segmento | Recebido:' . $id);
+        Log::channel('retorno')->info('OP - Remover Segmento | Recebido: ID:' . $id);
         try {
             $segmento = Segment::findOrFail($id);
             $segmento->delete();

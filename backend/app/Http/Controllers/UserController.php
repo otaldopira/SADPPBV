@@ -44,9 +44,11 @@ class UserController extends Controller
 
     public function show($registro)
     {
+        Log::channel('retorno')->info('OP - Listar Usuário | Recebido:' . $registro);
         try {
-            $usuario = User::find($registro);
 
+
+            $usuario = User::find($registro);
             if ($usuario == null) {
                 return response()->json([
                     "message" => "Usuário não encontrado.",
@@ -128,7 +130,7 @@ class UserController extends Controller
 
     public function update(Request $request, $registro)
     {
-        Log::channel('retorno')->info('OP - Update Usuário | Recebido:' . $registro . json_encode($request->all()));
+        Log::channel('retorno')->info('OP - Update Usuário | Recebido:' . ' Registro: ' . $registro . json_encode($request->all()));
 
         try {
             $user = User::find($registro);
@@ -201,7 +203,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, $registro)
     {
-        Log::channel('retorno')->info('OP - Remover Usuário | Recebido:' . json_encode($request->all()));
+        Log::channel('retorno')->info('OP - Remover Usuário | Recebido: Registro:' . $registro . json_encode($request->all()));
         try {
 
             $retorno = null;

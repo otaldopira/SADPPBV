@@ -23,7 +23,7 @@ export default {
         <button
           v-if="this.$route.name != 'menu'"
           @click="voltar"
-          class="inline-flex items-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-sm font-medium rounded-md"
+          class="shadow-md inline-flex items-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-sm font-medium rounded-md"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

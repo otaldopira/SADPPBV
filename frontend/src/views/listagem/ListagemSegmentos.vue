@@ -20,7 +20,10 @@
             <td>{{ segmento.direcao }}</td>
             <td>
               <div
-                :class="{ ativo: segmento.status == 1, inativo: segmento.status == 0 }"
+                :class="{
+                  ativo: segmento.status == 1,
+                  inativo: segmento.status == 0,
+                }"
               >
                 {{ segmento.status == 1 ? "Ativo" : "Inativo" }}
               </div>
@@ -139,7 +142,7 @@ export default {
     modalSucesso(title, subtitle) {
       Swal.fire({
         confirmButtonColor: "#3085d6",
-        title: title ?? "Ponto removido",
+        title: title ?? "Segmento removido",
         text: subtitle ?? " ",
         icon: "success",
       });
@@ -156,6 +159,7 @@ export default {
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json",
         },
+        order: [],
       },
     };
   },
