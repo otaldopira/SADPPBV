@@ -129,6 +129,10 @@ class DijkstraController extends Controller
             $rota->distancia = $distancias[$destino_id];
             $rota->caminho = $caminho;
 
+            $chegada = end($caminho);
+
+            $chegada->direcao = $chegada->ponto_final . ' -> Chegada';
+
             // Constrói um objeto com informações sobre a rota.
             return response()->json([
                 "rota" => $caminho,

@@ -78,9 +78,7 @@
             <td class="p-4 border-b border-gray-50 bg-white">{{ rota.distancia }}</td>
             <td class="p-4 border-b border-gray-50 bg-white">
               {{
-                index === rotas.length - 1
-                  ? rota.direcao + " -> Chegada"
-                  : rota.direcao
+               rota.direcao
               }}
             </td>
           </tr>
